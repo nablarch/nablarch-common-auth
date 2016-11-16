@@ -3,8 +3,8 @@ package nablarch.common.availability;
 import java.util.ArrayList;
 import java.util.List;
 
+import mockit.Expectations;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
 import mockit.Verifications;
 import nablarch.core.ThreadContext;
 import nablarch.fw.ExecutionContext;
@@ -21,7 +21,7 @@ import static org.junit.Assert.*;
 
 public class ServiceAvailabilityCheckHandlerTest {
 
-    private ServiceAvailabilityCheckHandler target = new ServiceAvailabilityCheckHandler();
+    private ServiceAvailabilityCheckHandler sut = new ServiceAvailabilityCheckHandler();
 
     @Mocked
     private ServiceAvailability serviceAvailability;
@@ -30,13 +30,13 @@ public class ServiceAvailabilityCheckHandlerTest {
     private Handler<?, ?> nextHandler;
 
     @Mocked
-    InboundOutboundHandler nextInoutHandler;
+    private InboundOutboundHandler nextInoutHandler;
     
     private ExecutionContext createContext() {
 
         ExecutionContext context = new ExecutionContext();
-        target.setServiceAvailability(serviceAvailability);
-        context.addHandler(target);
+        sut.setServiceAvailability(serviceAvailability);
+        context.addHandler(sut);
         context.addHandler(nextHandler);
 
         return context;
@@ -64,8 +64,9 @@ public class ServiceAvailabilityCheckHandlerTest {
             // サービスが提供されている場合
             final ExecutionContext context = createContext();
             ThreadContext.setRequestId("example");
+            
     
-            new NonStrictExpectations() {{
+            new Expectations() {{
                 serviceAvailability.isAvailable("example");
                 result = true;
             }};
@@ -81,7 +82,7 @@ public class ServiceAvailabilityCheckHandlerTest {
             // サービスが提供されていない場合
             final ExecutionContext context = createContext();
             ThreadContext.setRequestId("example");
-            new NonStrictExpectations() {{
+            new Expectations() {{
                 serviceAvailability.isAvailable("example");
                 result = false;
             }};
@@ -102,10 +103,10 @@ public class ServiceAvailabilityCheckHandlerTest {
         {
             // サービスが提供されている場合(内部リクエストIDを使う場合
             final ExecutionContext context = createContext();
-            target.setUsesInternalRequestId(true);
+            sut.setUsesInternalRequestId(true);
             ThreadContext.setInternalRequestId("internal");
     
-            new NonStrictExpectations() {{
+            new Expectations() {{
                 serviceAvailability.isAvailable("internal");
                 result = true;
             }};
@@ -121,9 +122,9 @@ public class ServiceAvailabilityCheckHandlerTest {
             // サービスが提供されていない場合
 
             final ExecutionContext context = createContext();
-            target.setUsesInternalRequestId(true);
+            sut.setUsesInternalRequestId(true);
             ThreadContext.setInternalRequestId("internal");
-            new NonStrictExpectations() {{
+            new Expectations() {{
                 serviceAvailability.isAvailable("internal");
                 result = false;
             }};
@@ -149,7 +150,7 @@ public class ServiceAvailabilityCheckHandlerTest {
             PipelineInvoker invoker = createInvoker(context);
             ThreadContext.setRequestId("example");
             // サービスが提供されている場合
-            new NonStrictExpectations() {{
+            new Expectations() {{
                 serviceAvailability.isAvailable("example");
                 result = true;
             }};
@@ -164,7 +165,7 @@ public class ServiceAvailabilityCheckHandlerTest {
         {
             final ExecutionContext context = createContext();
             // サービスが提供されていない場合
-            new NonStrictExpectations() {{
+            new Expectations() {{
                 serviceAvailability.isAvailable("example");
                 result = false;
             }};
