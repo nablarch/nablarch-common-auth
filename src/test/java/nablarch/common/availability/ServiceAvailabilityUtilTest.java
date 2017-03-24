@@ -8,13 +8,11 @@ import java.util.Map;
 
 import nablarch.core.repository.ObjectLoader;
 import nablarch.core.repository.SystemRepository;
-import nablarch.test.support.db.helper.VariousDbTestHelper;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import junit.framework.Assert;
 
 import mockit.Expectations;
 import mockit.Mocked;
