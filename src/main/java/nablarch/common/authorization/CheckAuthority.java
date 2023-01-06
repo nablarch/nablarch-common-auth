@@ -3,6 +3,7 @@ package nablarch.common.authorization;
 import nablarch.core.ThreadContext;
 import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.StringUtil;
+import nablarch.core.util.annotation.Published;
 import nablarch.fw.ExecutionContext;
 import nablarch.fw.Interceptor;
 import nablarch.fw.results.Forbidden;
@@ -32,6 +33,7 @@ import java.util.List;
  * </p>
  * @author Tanaka Tomoyuki
  */
+@Published
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Interceptor(CheckAuthority.Impl.class)
