@@ -1,5 +1,6 @@
 package nablarch.common.authorization;
 
+import nablarch.core.util.annotation.Published;
 import nablarch.fw.ExecutionContext;
 
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.Collection;
  *
  * @author Tanaka Tomoyuki
  */
+@Published(tag = "architect")
 public interface UserAuthorityResolver {
 
     /**
