@@ -1,5 +1,7 @@
-package nablarch.common.authorization;
+package nablarch.common.authorization.role;
 
+import nablarch.common.authorization.role.BasicAuthorityEvaluator;
+import nablarch.common.authorization.role.UserAuthorityResolver;
 import nablarch.fw.ExecutionContext;
 import org.junit.Before;
 import org.junit.Test;

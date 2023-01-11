@@ -1,5 +1,6 @@
-package nablarch.common.authorization;
+package nablarch.common.authorization.role;
 
+import nablarch.common.authorization.role.CheckAuthorityLogger;
 import nablarch.core.log.LoggerManager;
 import nablarch.core.util.StringUtil;
 import nablarch.test.support.log.app.OnMemoryLogWriter;
@@ -27,7 +28,7 @@ public class CheckAuthorityLoggerTest {
     public void setUp() {
         LoggerManager.terminate();
         OnMemoryLogWriter.clear();
-        sut.setTargetPackage("nablarch.common.authorization.action");
+        sut.setTargetPackage("nablarch.common.authorization.role.action");
     }
 
     /**
@@ -47,62 +48,62 @@ public class CheckAuthorityLoggerTest {
             "DEBUG CheckAuthority Annotation Settings" + LINE_SEP +
             format("class", "signature", "authority", "anyOf") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.BarAction",
+                "nablarch.common.authorization.role.action.BarAction",
                 "publicMethod()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodNoAnnotation()",
                 "",
                 "") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationAnyOfTrue()",
                 "FOO",
                 "true") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationMultipleArg(java.lang.String, int, java.util.List)",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationMultipleAuthorities()",
                 "BAR",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationMultipleAuthorities()",
                 "BUZZ",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationMultipleAuthorities()",
                 "FIZZ",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationMultipleAuthorities()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationNoArgs()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationSingleArg(java.lang.String)",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.ParentAction",
+                "nablarch.common.authorization.role.action.ParentAction",
                 "parentMethod()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.sub.FizzAction",
+                "nablarch.common.authorization.role.action.sub.FizzAction",
                 "publicMethod()",
                 "FOO",
                 "false") + LINE_SEP
@@ -125,12 +126,12 @@ public class CheckAuthorityLoggerTest {
             "DEBUG CheckAuthority Annotation Settings" + LINE_SEP +
             format("class", "signature", "authority", "anyOf") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooService",
+                "nablarch.common.authorization.role.action.FooService",
                 "publicMethod()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.sub.FizzService",
+                "nablarch.common.authorization.role.action.sub.FizzService",
                 "publicMethod()",
                 "FOO",
                 "false") + LINE_SEP

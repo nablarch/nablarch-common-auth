@@ -5,4 +5,4 @@
  * 本パッケージはインターセプタを用いたアノテーションベースの認可機能を提供する。
  * </p>
  */
-package nablarch.common.authorization;
+package nablarch.common.authorization.role;

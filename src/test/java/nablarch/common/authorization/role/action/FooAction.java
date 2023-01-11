@@ -1,6 +1,6 @@
-package nablarch.common.authorization.action;
+package nablarch.common.authorization.role.action;
 
-import nablarch.common.authorization.CheckAuthority;
+import nablarch.common.authorization.role.CheckAuthority;
 
 import java.util.List;
 

@@ -1,5 +1,6 @@
-package nablarch.common.authorization;
+package nablarch.common.authorization.role;
 
+import nablarch.common.authorization.role.AuthorityEvaluator;
 import nablarch.fw.ExecutionContext;
 
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package nablarch.common.authorization;
+package nablarch.common.authorization.role;
 
 import nablarch.core.ThreadContext;
 import nablarch.core.repository.SystemRepository;
