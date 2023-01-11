@@ -1,15 +1,15 @@
-package nablarch.common.authorization;
+package nablarch.common.authorization.role;
 
 import nablarch.fw.ExecutionContext;
 
 import java.util.Collection;
 
 /**
- * {@link AuthorityEvaluator}のモック。
+ * {@link RoleEvaluator}のモック。
  *
  * @author Tanaka Tomoyuki
  */
-public class MockAuthorityEvaluator implements AuthorityEvaluator {
+public class MockRoleEvaluator implements RoleEvaluator {
     /**
      * 各メソッドの戻り値。
      */
@@ -19,9 +19,9 @@ public class MockAuthorityEvaluator implements AuthorityEvaluator {
      */
     public String userId;
     /**
-     * 各メソッドに渡された権限の一覧。
+     * 各メソッドに渡されたロールの一覧。
      */
-    public Collection<String> authorities;
+    public Collection<String> roles;
     /**
      * 各メソッドに渡された実行コンテキスト。
      */
@@ -32,18 +32,18 @@ public class MockAuthorityEvaluator implements AuthorityEvaluator {
     public String calledMethodName;
 
     @Override
-    public boolean evaluateAnyOf(String userId, Collection<String> authorities, ExecutionContext context) {
+    public boolean evaluateAnyOf(String userId, Collection<String> roles, ExecutionContext context) {
         this.userId = userId;
-        this.authorities = authorities;
+        this.roles = roles;
         this.context = context;
         calledMethodName = "evaluateAnyOf";
         return returnValue;
     }
 
     @Override
-    public boolean evaluateAllOf(String userId, Collection<String> authorities, ExecutionContext context) {
+    public boolean evaluateAllOf(String userId, Collection<String> roles, ExecutionContext context) {
         this.userId = userId;
-        this.authorities = authorities;
+        this.roles = roles;
         this.context = context;
         calledMethodName = "evaluateAllOf";
         return returnValue;

@@ -1,4 +1,4 @@
-package nablarch.common.authorization;
+package nablarch.common.authorization.role;
 
 import nablarch.core.log.LoggerManager;
 import nablarch.core.util.StringUtil;
@@ -15,19 +15,19 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
 /**
- * {@link CheckAuthorityLogger}の単体テスト。
+ * {@link CheckRoleLogger}の単体テスト。
  *
  * @author Tanaka Tomoyuki
  */
-public class CheckAuthorityLoggerTest {
+public class CheckRoleLoggerTest {
     private static final String LINE_SEP = System.getProperty("line.separator");
-    private final CheckAuthorityLogger sut = new CheckAuthorityLogger();
+    private final CheckRoleLogger sut = new CheckRoleLogger();
 
     @Before
     public void setUp() {
         LoggerManager.terminate();
         OnMemoryLogWriter.clear();
-        sut.setTargetPackage("nablarch.common.authorization.action");
+        sut.setTargetPackage("nablarch.common.authorization.role.action");
     }
 
     /**
@@ -44,65 +44,65 @@ public class CheckAuthorityLoggerTest {
         String log = logs.get(logs.size() - 1);
 
         assertThat(log, is(
-            "DEBUG CheckAuthority Annotation Settings" + LINE_SEP +
-            format("class", "signature", "authority", "anyOf") + LINE_SEP +
+            "DEBUG CheckRole Annotation Settings" + LINE_SEP +
+            format("class", "signature", "role", "anyOf") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.BarAction",
+                "nablarch.common.authorization.role.action.BarAction",
                 "publicMethod()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodNoAnnotation()",
                 "",
                 "") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationAnyOfTrue()",
                 "FOO",
                 "true") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationMultipleArg(java.lang.String, int, java.util.List)",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
-                "publicMethodWithAnnotationMultipleAuthorities()",
+                "nablarch.common.authorization.role.action.FooAction",
+                "publicMethodWithAnnotationMultipleRoles()",
                 "BAR",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
-                "publicMethodWithAnnotationMultipleAuthorities()",
+                "nablarch.common.authorization.role.action.FooAction",
+                "publicMethodWithAnnotationMultipleRoles()",
                 "BUZZ",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
-                "publicMethodWithAnnotationMultipleAuthorities()",
+                "nablarch.common.authorization.role.action.FooAction",
+                "publicMethodWithAnnotationMultipleRoles()",
                 "FIZZ",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
-                "publicMethodWithAnnotationMultipleAuthorities()",
+                "nablarch.common.authorization.role.action.FooAction",
+                "publicMethodWithAnnotationMultipleRoles()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationNoArgs()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooAction",
+                "nablarch.common.authorization.role.action.FooAction",
                 "publicMethodWithAnnotationSingleArg(java.lang.String)",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.ParentAction",
+                "nablarch.common.authorization.role.action.ParentAction",
                 "parentMethod()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.sub.FizzAction",
+                "nablarch.common.authorization.role.action.sub.FizzAction",
                 "publicMethod()",
                 "FOO",
                 "false") + LINE_SEP
@@ -122,15 +122,15 @@ public class CheckAuthorityLoggerTest {
         String log = logs.get(logs.size() - 1);
 
         assertThat(log, is(
-            "DEBUG CheckAuthority Annotation Settings" + LINE_SEP +
-            format("class", "signature", "authority", "anyOf") + LINE_SEP +
+            "DEBUG CheckRole Annotation Settings" + LINE_SEP +
+            format("class", "signature", "role", "anyOf") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.FooService",
+                "nablarch.common.authorization.role.action.FooService",
                 "publicMethod()",
                 "FOO",
                 "false") + LINE_SEP +
             format(
-                "nablarch.common.authorization.action.sub.FizzService",
+                "nablarch.common.authorization.role.action.sub.FizzService",
                 "publicMethod()",
                 "FOO",
                 "false") + LINE_SEP
@@ -142,7 +142,7 @@ public class CheckAuthorityLoggerTest {
      */
     @Test
     public void testNoActionWhenLogLevelIsNotDebug() {
-        System.setProperty("nablarch.log.filePath", "classpath:nablarch/common/authorization/CheckAuthorityLoggerTest/log.properties");
+        System.setProperty("nablarch.log.filePath", "classpath:nablarch/common/authorization/role/CheckRoleLoggerTest/log.properties");
 
         sut.initialize();
 
@@ -160,12 +160,12 @@ public class CheckAuthorityLoggerTest {
      * 各要素をタブで連結して返す。
      * @param className クラス名
      * @param signature メソッドシグネチャ
-     * @param authority 権限
+     * @param role ロール
      * @param anyOf anyOf
      * @return 各要素をタブで連結した結果
      */
-    private String format(String className, String signature, String authority, String anyOf) {
-        List<String> elements = Arrays.asList(className, signature, authority, anyOf);
+    private String format(String className, String signature, String role, String anyOf) {
+        List<String> elements = Arrays.asList(className, signature, role, anyOf);
         return StringUtil.join("\t", elements);
     }
 }
