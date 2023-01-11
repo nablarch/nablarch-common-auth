@@ -1,9 +1,9 @@
 package nablarch.common.authorization.role.action.sub;
 
-import nablarch.common.authorization.role.CheckAuthority;
+import nablarch.common.authorization.role.CheckRole;
 
 public class FizzAction {
 
-    @CheckAuthority("FOO")
+    @CheckRole("FOO")
     public void publicMethod() {}
 }

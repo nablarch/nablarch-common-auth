@@ -19,12 +19,12 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * アクションメソッドに設定された{@link CheckAuthority}アノテーションの情報をログに出力するロガー。
+ * アクションメソッドに設定された{@link CheckRole}アノテーションの情報をログに出力するロガー。
  * <p>
  * このクラスは、指定されたパッケージ以下に存在するクラスを走査して、
- * 各メソッドとそこに設定された{@link CheckAuthority}アノテーションの情報を抽出する。
+ * 各メソッドとそこに設定された{@link CheckRole}アノテーションの情報を抽出する。
  * そして、抽出した情報をログにデバッグレベルで出力する。<br>
- * これは、アクションメソッドへの{@link CheckAuthority}の設定が設計通りになっているかを
+ * これは、アクションメソッドへの{@link CheckRole}の設定が設計通りになっているかを
  * 確認することを目的とした機能となる。
  * </p>
  * <p>
@@ -39,8 +39,8 @@ import java.util.regex.Pattern;
  * <ul>
  *   <li>クラスの完全修飾名({@code Class.getName()}で取得できる値)</li>
  *   <li>シグネチャ(メソッド名と引数の型の並び)</li>
- *   <li>{@link CheckAuthority}アノテーションの {@code value} に設定された値(未設定の場合は空)</li>
- *   <li>{@link CheckAuthority}アノテーションの {@code anyOf} に設定された値(未設定の場合は空)</li>
+ *   <li>{@link CheckRole}アノテーションの {@code value} に設定された値(未設定の場合は空)</li>
+ *   <li>{@link CheckRole}アノテーションの {@code anyOf} に設定された値(未設定の場合は空)</li>
  * </ul>
  * <p>
  * このクラスは{@link Initializable}を実装しており、アプリケーション起動時の初期化のタイミングで
@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
  *
  * @author Tanaka Tomoyuki
  */
-public class CheckAuthorityLogger implements Initializable {
+public class CheckRoleLogger implements Initializable {
     /**
      * 行の区切り文字。
      */
@@ -61,11 +61,11 @@ public class CheckAuthorityLogger implements Initializable {
     /**
      * ログのタイトル。
      */
-    private static final String TITLE = "CheckAuthority Annotation Settings";
+    private static final String TITLE = "CheckRole Annotation Settings";
     /**
      * ログのヘッダー。
      */
-    private static final String HEADER = StringUtil.join(SEP, Arrays.asList("class", "signature", "authority", "anyOf"));
+    private static final String HEADER = StringUtil.join(SEP, Arrays.asList("class", "signature", "role", "anyOf"));
 
     private String targetPackage;
     private String targetClassPattern = "^.*Action$";
@@ -74,7 +74,7 @@ public class CheckAuthorityLogger implements Initializable {
     public void initialize() {
         // Logger を static 変数にしていると、単体テストでログレベルを切り替えるテストができないのでローカルで取得している。
         // 初期化時に一度しか実行されない処理なので、 static 変数にした場合と差は無い。
-        final Logger logger = LoggerManager.get(CheckAuthorityLogger.class);
+        final Logger logger = LoggerManager.get(CheckRoleLogger.class);
 
         if (!logger.isDebugEnabled()) {
             return;
@@ -107,7 +107,7 @@ public class CheckAuthorityLogger implements Initializable {
     }
 
     /**
-     * 各メソッドに設定された{@link CheckAuthority}の情報をログ出力用にフォーマットする。
+     * 各メソッドに設定された{@link CheckRole}の情報をログ出力用にフォーマットする。
      * @param targetMethods 出力対象のメソッド一覧
      * @return 各メソッドの設定をフォーマットしたログメッセージ一覧
      */
@@ -115,15 +115,15 @@ public class CheckAuthorityLogger implements Initializable {
         final List<String> formattedSettings = new ArrayList<String>();
 
         for (Method method : targetMethods) {
-            final CheckAuthority checkAuthority = method.getAnnotation(CheckAuthority.class);
+            final CheckRole checkRole = method.getAnnotation(CheckRole.class);
 
-            if (checkAuthority == null) {
+            if (checkRole == null) {
                 final AnnotationSettings settings = new AnnotationSettings(method);
                 formattedSettings.add(settings.format());
             } else {
-                for (String authority : checkAuthority.value()) {
+                for (String role : checkRole.value()) {
                     final AnnotationSettings settings
-                        = new AnnotationSettings(method, authority, checkAuthority.anyOf());
+                        = new AnnotationSettings(method, role, checkRole.anyOf());
                     formattedSettings.add(settings.format());
                 }
             }
@@ -135,32 +135,32 @@ public class CheckAuthorityLogger implements Initializable {
     }
 
     /**
-     * 1行に出力する{@link CheckAuthority}の設定情報を保持し、フォーマットを行うためのクラス。
+     * 1行に出力する{@link CheckRole}の設定情報を保持し、フォーマットを行うためのクラス。
      */
     private static class AnnotationSettings {
         private final Method method;
-        private final String authority;
+        private final String role;
         private final String anyOf;
 
         /**
-         * {@link CheckAuthority}が設定されていないメソッド用のコンストラクタ。
+         * {@link CheckRole}が設定されていないメソッド用のコンストラクタ。
          * @param method 対象のメソッド
          */
         private AnnotationSettings(Method method) {
             this.method = method;
-            this.authority = "";
+            this.role = "";
             this.anyOf = "";
         }
 
         /**
-         * {@link CheckAuthority}が設定されているメソッド用のコンストラクタ。
+         * {@link CheckRole}が設定されているメソッド用のコンストラクタ。
          * @param method 対象のメソッド
-         * @param authority {@link CheckAuthority}に設定されていた権限の1つ
-         * @param anyOf {@link CheckAuthority}の{@code anyOf}
+         * @param role {@link CheckRole}に設定されていたロールの1つ
+         * @param anyOf {@link CheckRole}の{@code anyOf}
          */
-        private AnnotationSettings(Method method, String authority, boolean anyOf) {
+        private AnnotationSettings(Method method, String role, boolean anyOf) {
             this.method = method;
-            this.authority = authority;
+            this.role = role;
             this.anyOf = Boolean.toString(anyOf);
         }
 
@@ -170,7 +170,7 @@ public class CheckAuthorityLogger implements Initializable {
          */
         private String format() {
             final List<String> settings =
-                Arrays.asList(formatClassName(), formatMethodSignature(), authority, anyOf);
+                Arrays.asList(formatClassName(), formatMethodSignature(), role, anyOf);
             return StringUtil.join(SEP, settings);
         }
 

@@ -1,9 +1,9 @@
 package nablarch.common.authorization.role.action;
 
-import nablarch.common.authorization.role.CheckAuthority;
+import nablarch.common.authorization.role.CheckRole;
 
 public class BarAction {
 
-    @CheckAuthority("FOO")
+    @CheckRole("FOO")
     public void publicMethod() {}
 }

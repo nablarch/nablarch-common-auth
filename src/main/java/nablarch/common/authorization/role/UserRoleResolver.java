@@ -6,18 +6,18 @@ import nablarch.fw.ExecutionContext;
 import java.util.Collection;
 
 /**
- * ユーザに紐づく権限の一覧を解決するインタフェース。
+ * ユーザに紐づくロールの一覧を解決するインタフェース。
  *
  * @author Tanaka Tomoyuki
  */
 @Published(tag = "architect")
-public interface UserAuthorityResolver {
+public interface UserRoleResolver {
 
     /**
-     * 指定されたユーザに紐づく権限の一覧を解決して返却する。
+     * 指定されたユーザに紐づくロールの一覧を解決して返却する。
      * @param userId ユーザID
      * @param context 実行コンテキスト
-     * @return ユーザに紐づく権限の一覧(権限が無い場合は空のコレクションを返す)
+     * @return ユーザに紐づくロールの一覧(ロールが無い場合は空のコレクションを返す)
      */
     Collection<String> resolve(String userId, ExecutionContext context);
 }

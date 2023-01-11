@@ -23,14 +23,14 @@ import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThrows;
 
 /**
- * {@link CheckAuthority.Impl}の単体テストクラス。
+ * {@link CheckRole.Impl}の単体テストクラス。
  *
  * @author Tanaka Tomoyuki
  */
-public class CheckAuthorityImplTest {
+public class CheckRoleImplTest {
 
-    private final CheckAuthority.Impl sut = new CheckAuthority.Impl();
-    private final MockAuthorityEvaluator mockAuthorityEvaluator = new MockAuthorityEvaluator();
+    private final CheckRole.Impl sut = new CheckRole.Impl();
+    private final MockRoleEvaluator mockRoleEvaluator = new MockRoleEvaluator();
     private final MockHandler mockHandler = new MockHandler();
     private final ExecutionContext context = new ExecutionContext();
     private final Object param = new Object();
@@ -40,7 +40,7 @@ public class CheckAuthorityImplTest {
         SystemRepository.clear();
         ThreadContext.clear();
 
-        registerComponent("authorityEvaluator", mockAuthorityEvaluator);
+        registerComponent("roleEvaluator", mockRoleEvaluator);
         mockHandler.returnValue = "test";
         sut.setOriginalHandler(mockHandler);
         ThreadContext.setUserId("test-user");
@@ -49,29 +49,29 @@ public class CheckAuthorityImplTest {
     /**
      * anyOfがfalseで認可の判定結果がtrueの場合に、以下を検証。
      * <ul>
-     *   <li>{@link AuthorityEvaluator}にパラメータが意図通りに渡せていること</li>
-     *   <li>{@link AuthorityEvaluator#evaluateAllOf(String, Collection, ExecutionContext)}が呼べていること</li>
+     *   <li>{@link RoleEvaluator}にパラメータが意図通りに渡せていること</li>
+     *   <li>{@link RoleEvaluator#evaluateAllOf(String, Collection, ExecutionContext)}が呼べていること</li>
      *   <li>後続ハンドラが実行されていること</li>
      * </ul>
      */
     @Test
     public void testAllOf() {
         class TestAction {
-            @CheckAuthority({"FOO", "BAR"})
+            @CheckRole({"FOO", "BAR"})
             public void method() {}
         }
 
-        mockAuthorityEvaluator.returnValue = true;
+        mockRoleEvaluator.returnValue = true;
 
         sut.setInterceptor(findAnnotation(TestAction.class));
 
         Object result = sut.handle(param, context);
 
-        // AuthorityEvaluator の呼び出し確認
-        assertThat(mockAuthorityEvaluator.calledMethodName, is("evaluateAllOf"));
-        assertThat(mockAuthorityEvaluator.userId, is(ThreadContext.getUserId()));
-        assertThat(mockAuthorityEvaluator.authorities, is(contains("FOO", "BAR")));
-        assertThat(mockAuthorityEvaluator.context, is(sameInstance(context)));
+        // RoleEvaluator の呼び出し確認
+        assertThat(mockRoleEvaluator.calledMethodName, is("evaluateAllOf"));
+        assertThat(mockRoleEvaluator.userId, is(ThreadContext.getUserId()));
+        assertThat(mockRoleEvaluator.roles, is(contains("FOO", "BAR")));
+        assertThat(mockRoleEvaluator.context, is(sameInstance(context)));
 
         // 後続ハンドラの呼び出し確認
         assertThat(result, is(sameInstance(mockHandler.returnValue)));
@@ -82,29 +82,29 @@ public class CheckAuthorityImplTest {
     /**
      * anyOfがtrueで認可の判定結果がtrueの場合に、以下を検証。
      * <ul>
-     *   <li>{@link AuthorityEvaluator}にパラメータが意図通りに渡せていること</li>
-     *   <li>{@link AuthorityEvaluator#evaluateAnyOf(String, Collection, ExecutionContext)}が呼べていること</li>
+     *   <li>{@link RoleEvaluator}にパラメータが意図通りに渡せていること</li>
+     *   <li>{@link RoleEvaluator#evaluateAnyOf(String, Collection, ExecutionContext)}が呼べていること</li>
      *   <li>後続ハンドラが実行されていること</li>
      * </ul>
      */
     @Test
     public void testAnyOf() {
         class TestAction {
-            @CheckAuthority(value = {"FOO", "BAR"}, anyOf = true)
+            @CheckRole(value = {"FOO", "BAR"}, anyOf = true)
             public void method() {}
         }
 
-        mockAuthorityEvaluator.returnValue = true;
+        mockRoleEvaluator.returnValue = true;
 
         sut.setInterceptor(findAnnotation(TestAction.class));
 
         Object result = sut.handle(param, context);
 
-        // AuthorityEvaluator の呼び出し確認
-        assertThat(mockAuthorityEvaluator.calledMethodName, is("evaluateAnyOf"));
-        assertThat(mockAuthorityEvaluator.userId, is(ThreadContext.getUserId()));
-        assertThat(mockAuthorityEvaluator.authorities, is(contains("FOO", "BAR")));
-        assertThat(mockAuthorityEvaluator.context, is(sameInstance(context)));
+        // RoleEvaluator の呼び出し確認
+        assertThat(mockRoleEvaluator.calledMethodName, is("evaluateAnyOf"));
+        assertThat(mockRoleEvaluator.userId, is(ThreadContext.getUserId()));
+        assertThat(mockRoleEvaluator.roles, is(contains("FOO", "BAR")));
+        assertThat(mockRoleEvaluator.context, is(sameInstance(context)));
 
         // 後続ハンドラの呼び出し確認
         assertThat(result, is(sameInstance(mockHandler.returnValue)));
@@ -122,11 +122,11 @@ public class CheckAuthorityImplTest {
     @Test
     public void testAllOfWhenDenied() {
         class TestAction {
-            @CheckAuthority({"FOO", "BAR"})
+            @CheckRole({"FOO", "BAR"})
             public void method() {}
         }
 
-        mockAuthorityEvaluator.returnValue = false;
+        mockRoleEvaluator.returnValue = false;
 
         sut.setInterceptor(findAnnotation(TestAction.class));
 
@@ -138,7 +138,7 @@ public class CheckAuthorityImplTest {
             }
         });
         assertThat(exception.getMessage(),
-                is("User has no authority. userId=[test-user], authorities=[FOO, BAR]"));
+                is("User has no role. userId=[test-user], roles=[FOO, BAR]"));
 
         // 後続ハンドラが呼ばれていないことの確認
         assertThat(mockHandler.param, is(nullValue()));
@@ -154,11 +154,11 @@ public class CheckAuthorityImplTest {
     @Test
     public void testAnyOfWhenDenied() {
         class TestAction {
-            @CheckAuthority(value = {"FOO", "BAR"}, anyOf = true)
+            @CheckRole(value = {"FOO", "BAR"}, anyOf = true)
             public void method() {}
         }
 
-        mockAuthorityEvaluator.returnValue = false;
+        mockRoleEvaluator.returnValue = false;
 
         sut.setInterceptor(findAnnotation(TestAction.class));
 
@@ -170,17 +170,17 @@ public class CheckAuthorityImplTest {
             }
         });
         assertThat(exception.getMessage(),
-                is("User has no authority. userId=[test-user], authorities=[FOO, BAR]"));
+                is("User has no role. userId=[test-user], roles=[FOO, BAR]"));
 
         // 後続ハンドラが呼ばれていないことの確認
         assertThat(mockHandler.param, is(nullValue()));
     }
 
     /**
-     * {@link AuthorityEvaluator}がシステムリポジトリに登録されていない場合は例外がスローされること。
+     * {@link RoleEvaluator}がシステムリポジトリに登録されていない場合は例外がスローされること。
      */
     @Test
-    public void testThrownExceptionWhenAuthorityEvaluatorIsNotRegisteredInSystemRepository() {
+    public void testThrownExceptionWhenRoleEvaluatorIsNotRegisteredInSystemRepository() {
         SystemRepository.clear();
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, new ThrowingRunnable() {
@@ -191,7 +191,7 @@ public class CheckAuthorityImplTest {
         });
 
         assertThat(exception.getMessage(),
-                is("The component of \"authorityEvaluator\" is not found."));
+                is("The component of \"roleEvaluator\" is not found."));
     }
 
     /**
@@ -211,18 +211,18 @@ public class CheckAuthorityImplTest {
     }
 
     /**
-     * 指定されたクラスのメソッドの中から{@link CheckAuthority}アノテーションが設定されたメソッドを見つけ、
+     * 指定されたクラスのメソッドの中から{@link CheckRole}アノテーションが設定されたメソッドを見つけ、
      * そのアノテーションを返す。
      * @param actionClass 検索対象のクラス
-     * @return {@link CheckAuthority}
+     * @return {@link CheckRole}
      */
-    private CheckAuthority findAnnotation(Class<?> actionClass) {
+    private CheckRole findAnnotation(Class<?> actionClass) {
         for (Method method : actionClass.getMethods()) {
-            if (method.isAnnotationPresent(CheckAuthority.class)) {
-                return method.getAnnotation(CheckAuthority.class);
+            if (method.isAnnotationPresent(CheckRole.class)) {
+                return method.getAnnotation(CheckRole.class);
             }
         }
-        throw new RuntimeException("CheckAuthority annotation is not found.");
+        throw new RuntimeException("CheckRole annotation is not found.");
     }
 
     /**
