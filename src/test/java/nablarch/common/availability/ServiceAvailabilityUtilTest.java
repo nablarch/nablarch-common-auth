@@ -1,29 +1,26 @@
 package nablarch.common.availability;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import nablarch.core.repository.ObjectLoader;
 import nablarch.core.repository.SystemRepository;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import mockit.Expectations;
-import mockit.Mocked;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ServiceAvailabilityUtilTest {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    @Mocked
-    private ServiceAvailability serviceAvailability;
+    private final ServiceAvailability serviceAvailability = mock(ServiceAvailability.class);
 
     @Before
     public void setUp() throws Exception {
@@ -40,26 +37,20 @@ public class ServiceAvailabilityUtilTest {
 
     @Test
     public void testServiceAvailableOkStatus() {
-        new Expectations() {{
-            serviceAvailability.isAvailable("REQ0000001");
-            result = true;
-        }};
+        when(serviceAvailability.isAvailable("REQ0000001")).thenReturn(true);
 
         assertThat(ServiceAvailabilityUtil.isAvailable("REQ0000001"), is(true));
     }
 
     @Test
     public void testServiceUnAvailableNgStatus() {
-        new Expectations() {{
-            serviceAvailability.isAvailable("REQ0000001");
-            result = false;
-        }};
+        when(serviceAvailability.isAvailable("REQ0000001")).thenReturn(false);
 
         assertThat(ServiceAvailabilityUtil.isAvailable("REQ0000001"), is(false));
     }
 
     /**
-     * {@link ServiceAvailabilityUtil#getServiceAvailability()}のテスト。
+     * {@link ServiceAvailabilityUtil#isAvailable)}のテスト。
      *
      * @throws Exception
      */

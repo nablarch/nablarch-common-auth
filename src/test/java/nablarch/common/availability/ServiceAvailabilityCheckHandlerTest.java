@@ -1,11 +1,5 @@
 package nablarch.common.availability;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.Verifications;
 import nablarch.core.ThreadContext;
 import nablarch.fw.ExecutionContext;
 import nablarch.fw.Handler;
@@ -14,23 +8,26 @@ import nablarch.fw.OutboundHandleable;
 import nablarch.fw.invoker.BasicPipelineListBuilder;
 import nablarch.fw.invoker.PipelineInvoker;
 import nablarch.fw.results.ServiceUnavailable;
-
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ServiceAvailabilityCheckHandlerTest {
 
-    private ServiceAvailabilityCheckHandler sut = new ServiceAvailabilityCheckHandler();
+    private final ServiceAvailabilityCheckHandler sut = new ServiceAvailabilityCheckHandler();
 
-    @Mocked
-    private ServiceAvailability serviceAvailability;
+    private final ServiceAvailability serviceAvailability = mock(ServiceAvailability.class);
 
-    @Mocked
-    private Handler<?, ?> nextHandler;
+    private final Handler<?, ?> nextHandler = mock(Handler.class);
 
-    @Mocked
-    private InboundOutboundHandler nextInoutHandler;
+    private final InboundOutboundHandler nextInoutHandler = mock(InboundOutboundHandler.class);
     
     private ExecutionContext createContext() {
 
@@ -65,27 +62,17 @@ public class ServiceAvailabilityCheckHandlerTest {
             final ExecutionContext context = createContext();
             ThreadContext.setRequestId("example");
             
-    
-            new Expectations() {{
-                serviceAvailability.isAvailable("example");
-                result = true;
-            }};
+            when(serviceAvailability.isAvailable("example")).thenReturn(true);
             
             context.handleNext(null);
             
-            new Verifications() {{
-                nextHandler.handle(null, context);
-                times = 1;
-            }};
+            verify(nextHandler).handle(null, context);
         }
         {
             // サービスが提供されていない場合
             final ExecutionContext context = createContext();
             ThreadContext.setRequestId("example");
-            new Expectations() {{
-                serviceAvailability.isAvailable("example");
-                result = false;
-            }};
+            when(serviceAvailability.isAvailable("example")).thenReturn(false);
     
             try {
                 context.handleNext(null);
@@ -94,10 +81,7 @@ public class ServiceAvailabilityCheckHandlerTest {
                 // OK
             }
             
-            new Verifications() {{
-                nextInoutHandler.handleInbound(context);
-                times = 0;
-            }};
+            verify(nextInoutHandler, never()).handleInbound(context);
         }
 
         {
@@ -106,17 +90,11 @@ public class ServiceAvailabilityCheckHandlerTest {
             sut.setUsesInternalRequestId(true);
             ThreadContext.setInternalRequestId("internal");
     
-            new Expectations() {{
-                serviceAvailability.isAvailable("internal");
-                result = true;
-            }};
+            when(serviceAvailability.isAvailable("internal")).thenReturn(true);
             
             context.handleNext(null);
             
-            new Verifications() {{
-                nextHandler.handle(null, context);
-                times = 1;
-            }};
+            verify(nextHandler).handle(null, context);
         }
         {
             // サービスが提供されていない場合
@@ -124,10 +102,7 @@ public class ServiceAvailabilityCheckHandlerTest {
             final ExecutionContext context = createContext();
             sut.setUsesInternalRequestId(true);
             ThreadContext.setInternalRequestId("internal");
-            new Expectations() {{
-                serviceAvailability.isAvailable("internal");
-                result = false;
-            }};
+            when(serviceAvailability.isAvailable("internal")).thenReturn(false);
     
             try {
                 context.handleNext(null);
@@ -136,10 +111,7 @@ public class ServiceAvailabilityCheckHandlerTest {
                 // OK
             }
             
-            new Verifications() {{
-                nextInoutHandler.handleInbound(context);
-                times = 0;
-            }};
+            verify(nextInoutHandler, never()).handleInbound(context);
         }
     }
 
@@ -150,25 +122,16 @@ public class ServiceAvailabilityCheckHandlerTest {
             PipelineInvoker invoker = createInvoker(context);
             ThreadContext.setRequestId("example");
             // サービスが提供されている場合
-            new Expectations() {{
-                serviceAvailability.isAvailable("example");
-                result = true;
-            }};
+            when(serviceAvailability.isAvailable("example")).thenReturn(true);
     
             invoker.invokeInbound(context);
             
-            new Verifications() {{
-                nextInoutHandler.handleInbound(context);
-                times = 1;
-            }};
+            verify(nextInoutHandler).handleInbound(context);
         }
         {
             final ExecutionContext context = createContext();
             // サービスが提供されていない場合
-            new Expectations() {{
-                serviceAvailability.isAvailable("example");
-                result = false;
-            }};
+            when(serviceAvailability.isAvailable("example")).thenReturn(false);
     
             try {
                 context.handleNext(null);
@@ -177,10 +140,7 @@ public class ServiceAvailabilityCheckHandlerTest {
                 // OK
             }
             
-            new Verifications() {{
-                nextInoutHandler.handleInbound(context);
-                times = 0;
-            }};
+            verify(nextInoutHandler, never()).handleInbound(context);
         }
     }
 
