@@ -110,7 +110,7 @@ public class PermissionCheckHandler implements Handler<Object, Object> {
     }
     
     /**
-     * 開閉局状態の判定を内部リクエストIDを用いて行うか否かを設定する。
+     * 認可判定を内部リクエストIDを用いて行うか否かを設定する。
      * 
      * 明示的に設定しなかった場合のデフォルトは true (内部リクエストIDを使用する。)
      * 
